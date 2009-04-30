@@ -1,0 +1,32 @@
+Standard Failure
+==============
+
+	error!(:artist_not_found, :retry => :still_not_found) { @artist.nil? || @artist.deleted? }
+	error!(:album_not_found, :retry => :still_not_found) { @album.nil? || @album.deleted? }
+	error(:incorrect_albums_artist_name, :unless => [:artist_not_found, :album_not_found]) { @album.artist.name != @artist.name }
+
+	if @artist.nil?
+	  @artist_not_found = true
+	  artist_not_found
+	  if @artist.nil?
+	    still_not_found
+	    raise "error"
+	  end
+	end
+
+	if @album.nil? || @album.tainted
+	  @album_not_found = true
+	  album_not_found
+	  if @album.nil? || @album.tainted
+	    still_not_found
+	    raise "error"
+	  end
+	end
+
+	unless @artist_not_found || @album_not_found
+	  if @album.artist.name != @artist.name
+	    incorrect_albums_artist_name
+	  end
+	end
+
+Copyright (c) 2008 Lucas Carlson, released under the MIT license
