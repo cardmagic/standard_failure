@@ -1,9 +1,13 @@
 Standard Failure
 ==============
 
+Standard failure reduces the if/else logic that litters controllers.
+
 	error!(:artist_not_found, :retry => :still_not_found) { @artist.nil? || @artist.deleted? }
 	error!(:album_not_found, :retry => :still_not_found) { @album.nil? || @album.deleted? }
 	error(:incorrect_albums_artist_name, :unless => [:artist_not_found, :album_not_found]) { @album.artist.name != @artist.name }
+
+The code above used to look like this:
 
 	if @artist.nil?
 	  @artist_not_found = true
@@ -14,10 +18,10 @@ Standard Failure
 	  end
 	end
 
-	if @album.nil? || @album.tainted
+	if @album.nil? || @album.deleted?
 	  @album_not_found = true
 	  album_not_found
-	  if @album.nil? || @album.tainted
+	  if @album.nil? || @album.deleted?
 	    still_not_found
 	    raise "error"
 	  end
